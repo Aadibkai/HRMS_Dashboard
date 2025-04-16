@@ -5,16 +5,13 @@ import { setLoginState } from "@/Redux/slices/loginSlice";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-function SignUp() {
+function SignIn() {
   const router = useRouter();
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
     email: "",
     password: "",
-    mobileNo: "",
   });
 
   const handleChange = (e) => {
@@ -28,68 +25,42 @@ function SignUp() {
   const handleSubmit = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8086/api/signup",
+        "http://localhost:8086/api/signin",
         formData
       );
-
       if (response.data.success) {
         const user = response.data.user;
         localStorage.setItem("isLogin", true);
+
         localStorage.setItem("auth", JSON.stringify(user));
         dispatch(setLoginState(true));
-        toast.success("Signup successful! Redirecting...");
-        router.push("/dashboard");
+        toast.success("Login successful! Redirecting...");
+        setTimeout(()=>{
+            router.push("/dashboard");
+        },500)
+  
       } else {
-        toast.error(response.data.message || "Signup failed");
+        toast.error(response.data.message || "Login failed");
       }
     } catch (error) {
-      console.error("Signup failed:", error.message || error);
-      toast.error("Signup failed. Please check your network or server.");
+      console.error("Login failed:", error.message || error);
+      toast.error(
+        error.response?.data?.message || "Login failed. Please try again."
+      );
     }
   };
+
   const navigate = () => {
-    router.push("/SignIn");
+    router.push("/signUp");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-          Create an Account
+          Sign In
         </h2>
         <div className="space-y-5">
-          <div>
-            <label
-              htmlFor="firstName"
-              className="block text-sm font-medium text-gray-600"
-            >
-              First Name
-            </label>
-            <input
-              type="text"
-              id="firstName"
-              placeholder="John"
-              className="w-full mt-1 p-2 border border-gray-300 rounded-lg"
-              value={formData.firstName}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="lastName"
-              className="block text-sm font-medium text-gray-600"
-            >
-              Last Name
-            </label>
-            <input
-              type="text"
-              id="lastName"
-              placeholder="Doe"
-              className="w-full mt-1 p-2 border border-gray-300 rounded-lg"
-              value={formData.lastName}
-              onChange={handleChange}
-            />
-          </div>
           <div>
             <label
               htmlFor="email"
@@ -103,22 +74,6 @@ function SignUp() {
               placeholder="you@example.com"
               className="w-full mt-1 p-2 border border-gray-300 rounded-lg"
               value={formData.email}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="mobileNo"
-              className="block text-sm font-medium text-gray-600"
-            >
-              Mobile No
-            </label>
-            <input
-              type="number"
-              id="mobileNo"
-              placeholder="9876543210"
-              className="w-full mt-1 p-2 border border-gray-300 rounded-lg"
-              value={formData.mobileNo}
               onChange={handleChange}
             />
           </div>
@@ -142,13 +97,13 @@ function SignUp() {
             onClick={handleSubmit}
             className="w-full bg-blue text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
           >
-            Sign Up
+            Sign In
           </button>
         </div>
         <div>
-          already have a account{" "}
+          Not have a account{" "}
           <span className=" cursor-pointer text-[blue]" onClick={navigate}>
-            SignIn
+            SignUp
           </span>
         </div>
       </div>
@@ -156,4 +111,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default SignIn;
